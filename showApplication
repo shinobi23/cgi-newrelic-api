@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+require 'net/http'
+require 'uri'
+require 'json'
+require 'cgi'
+#List Applications
+ak='83e1c51dd6d9e3a3a608b52d733892db0e9bd9a6d18bd0c'
+#Get request sample
+def getRequest(ak,uri,host,path)
+  uri=URI.parse(uri)
+  headers = {
+           "X-Api-Key" => ak
+            }
+  host=uri.host
+  path=uri.path
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  res,req = http.get(path,headers)
+  puts JSON.pretty_generate(res.body)
+end
+#getApplications(ak)
+#curl -X GET 'https://api.newrelic.com/v2/applications.json' \-H 'X-Api-Key:83e1c51dd6d9e3a3a608b52d733892db0e9bd9a6d18bd0c' -i 
+def getApplications(ak)
+  uri='https://api.newrelic.com/v2/applications.json'
+  parseUrl=URI.parse(uri)
+  host=parseUrl.host
+  path=parseUrl.path
+  getRequest(ak,uri,host,path)
+end
+#curl -X GET 'https://api.newrelic.com/v2/applications/{id}.json' \-H 'X-Api-Key:83e1c51dd6d9e3a3a608b52d733892db0e9bd9a6d18bd0c' -i 
+#showApplication(ak,'553099085')
+def showApplication(ak,appId)
+  parseUrl=URI.parse('https://api.newrelic.com/v2/applications/'+appId+'.json')
+  uri='https://api.newrelic.com/v2/applications/'+appId+'.json'
+  host=parseUrl.host
+  path=parseUrl.path
+  getRequest(ak,uri,host,path)
+end
+#curl -X GET 'https://api.newrelic.com/v2/applications/{application_id}/metrics.json' \ -H 'X-Api-Key:83e1c51dd6d9e3a3a608b52d733892db0e9bd9a6d18bd0c' -i 
+#metricNames(ak,'553099085')
+def metricNames(ak,appId)
+  parseUrl=URI.parse('https://api.newrelic.com/v2/applications/'+appId+'/metrics.json')
+  uri='https://api.newrelic.com/v2/applications/'+appId+'/metrics.json'
+  host=parseUrl.host
+  path=parseUrl.path
+  getRequest(ak,uri,host,path)
+end
+#
+#Names is array names=[1,2,3,4,5,6]
+def metricData(ak,aapId,names)
+  parseUrl=URI.parse('https://api.newrelic.com/v2/applications/'+appId+'/metrics/data.json')
+  uri='https://api.newrelic.com/v2/applications/'+appId+'/metrics/data.json?names'+
+  host=parseUrl.host
+  path=parseUrl.path
+  getRequest(ak,uri,host,path)
+end
+
+puts "Content-type: text/html\n\n"
+puts ""
+# use URI.parse to parse the URL into its constituent parts - host, port, query string.
+cgi = CGI.new
+current = "http://localhost"+ENV['REQUEST_URI'] 
+parsed = URI.parse(current)
+valueId=parsed.query[6,15]
+showApplication(ak,valueId)
+
